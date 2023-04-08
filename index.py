@@ -8,7 +8,7 @@ from llama_index.indices.base import BaseGPTIndex
 def create_index() -> BaseGPTIndex:
     documents = SimpleDirectoryReader('data').load_data()
 
-    service_context = ServiceContext.from_defaults(
+    service_context = ServiceContext.from_defaults(  # TODO: look into local llm alternative
         llm_predictor=LLMPredictor(llm=ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")),
         embed_model=LangchainEmbedding(HuggingFaceEmbeddings()))
 
