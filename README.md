@@ -1,9 +1,5 @@
 # Knowledge Base
 
-### Run
-
-Run with `python -m uvicorn app:app --reload`
-
 ### Index
 
 A queryable in-memory index is created over the files in the `data` directory upon startup.
@@ -20,6 +16,11 @@ locally.
 
 To instead use `gpt-3.5-turbo`, set the `LLM_MODEL_NAME` env var to `gpt-3.5-turbo`.
 If `gpt-3.5-turbo` is used, the `OPENAI_API_KEY` env var must also be set.
+
+### Run
+Install dependencies with `pip install -r requirements.txt`
+
+Run with `python -m uvicorn app:app --reload`
 
 ### Sample Requests
 

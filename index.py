@@ -1,4 +1,6 @@
 import os
+import time
+
 import pinecone
 from langchain.embeddings import HuggingFaceEmbeddings
 from llama_index import LLMPredictor, LangchainEmbedding, ServiceContext, GPTSimpleVectorIndex, \
@@ -17,10 +19,6 @@ def create_index() -> BaseGPTIndex:
         llm_predictor=LLMPredictor(llm=get_llm()),
         embed_model=LangchainEmbedding(HuggingFaceEmbeddings()))
 
-    return get_configured_index(service_context, documents)
-
-
-def get_configured_index(service_context: ServiceContext, documents: list[Document]) -> BaseGPTIndex:
     match INDEX_TYPE:
         case "in-memory":
             return GPTSimpleVectorIndex.from_documents(documents, service_context=service_context)
@@ -35,6 +33,20 @@ def create_pinecone_index(documents: list[Document]) -> BaseGPTIndex:
     index_name = "knowledge-base"
 
     if index_name not in pinecone.list_indexes():
-        pinecone.create_index(name=index_name, dimension=768, metric="cosine", pod_type="p1")
+        pinecone.create_index(name=index_name, dimension=1536, metric="cosine", pod_type="p1")
+        wait_on_pinecone_index(index_name)
 
     return GPTPineconeIndex.from_documents(documents, pinecone_index=pinecone.Index(index_name))
+
+
+def wait_on_pinecone_index(index: str):
+    while True:
+        try:
+            desc = pinecone.describe_index(index)
+            if desc[7]['ready']:
+                return
+        except pinecone.NotFoundException:
+            pass
+
+        print("pinecone index not yet ready. checking again in 5 seconds...")
+        time.sleep(5)
