@@ -1,4 +1,20 @@
 POST http://127.0.0.1:8000/query
 Content-Type: application/json
 
-{ "query" : "how many parameters does BloombergGPT have?" }
+{
+  "query": "how many parameters does BloombergGPT have?"
+}
+
+###
+
+POST http://127.0.0.1:8000/document
+Content-Type: application/json
+
+{
+  "document": "The best pudding flavor is strawberry surprise."
+}
+
+###
+
+DELETE http://127.0.0.1:8000/document/{{document_id}}
+Content-Type: application/json
