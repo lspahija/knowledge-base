@@ -15,17 +15,21 @@ INDEX_TYPE = os.getenv("INDEX_TYPE", "in-memory")
 def create_index() -> BaseGPTIndex:
     documents = SimpleDirectoryReader('data').load_data()
 
-    service_context = ServiceContext.from_defaults(
-        llm_predictor=LLMPredictor(llm=get_llm()),
-        embed_model=LangchainEmbedding(HuggingFaceEmbeddings()))
-
     match INDEX_TYPE:
         case "in-memory":
-            return GPTSimpleVectorIndex.from_documents(documents, service_context=service_context)
+            return create_in_memory_index(documents)
         case "pinecone":
             return create_pinecone_index(documents)
         case _:
             raise Exception(f"unsupported index type: {INDEX_TYPE}")
+
+
+def create_in_memory_index(documents: list[Document]):
+    service_context = ServiceContext.from_defaults(
+        llm_predictor=LLMPredictor(llm=get_llm()),
+        embed_model=LangchainEmbedding(HuggingFaceEmbeddings()))
+
+    return GPTSimpleVectorIndex.from_documents(documents, service_context=service_context)
 
 
 def create_pinecone_index(documents: list[Document]) -> BaseGPTIndex:
